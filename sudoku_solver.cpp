@@ -1,6 +1,10 @@
 #include <iostream>
 using namespace std;
 
+#define UNASSIGNED 0
+#define N 9
+
+
 /* each cage will be assigned a unique id.
  * the cells array for each cage will contain the id of the cells belonging to the cage.
  * capacity of the cage = no of cells
@@ -43,6 +47,10 @@ void solve_sudoku(cage Cage[],cell board[9][9],int no_of_cage)
             }
     }
 
+    for(int i=0;i<9;i++)
+    {
+
+    }
 
 }
 
@@ -87,6 +95,61 @@ int main() {
 }
 
 
+/* Searches the grid to find an entry that is still unassigned. If
+   found, the reference parameters row, col will be set the location
+   that is unassigned, and true is returned. If no unassigned entries
+   remain, false is returned. */
+bool FindUnassignedLocation(cell grid[N][N], int &row, int &col)
+{
+    for (row = 0; row < N; row++)
+        for (col = 0; col < N; col++)
+            if (grid[row][col].value == UNASSIGNED)
+                return true;
+    return false;
+}
+
+/* Returns a boolean which indicates whether any assigned entry
+   in the specified row matches the given number. */
+bool UsedInRow(cell grid[N][N], int row, int num)
+{
+    for (int col = 0; col < N; col++)
+        if (grid[row][col].value == num)
+            return true;
+    return false;
+}
+
+/* Returns a boolean which indicates whether any assigned entry
+   in the specified column matches the given number. */
+bool UsedInCol(cell grid[N][N], int col, int num)
+{
+    for (int row = 0; row < N; row++)
+        if (grid[row][col].value == num)
+            return true;
+    return false;
+}
+
+/* Returns a boolean which indicates whether any assigned entry
+   within the specified 3x3 box matches the given number. */
+bool UsedInBox(cell grid[N][N], int boxStartRow, int boxStartCol, int num)
+{
+    for (int row = 0; row < 3; row++)
+        for (int col = 0; col < 3; col++)
+            if (grid[row+boxStartRow][col+boxStartCol].value == num)
+                return true;
+    return false;
+}
+
+/* Returns a boolean which indicates whether it will be legal to assign
+   num to the given row,col location. */
+bool isSafe(cell grid[N][N], int row, int col, int num)
+{
+    /* Check if 'num' is not already placed in current row,
+       current column and current 3x3 box */
+    return !UsedInRow(grid, row, num) &&
+           !UsedInCol(grid, col, num) &&
+           !UsedInBox(grid, row - row%3 , col - col%3, num);
+}
+
 
 void print_board(cell board[][9])
 {
@@ -97,6 +160,7 @@ void print_board(cell board[][9])
         cout<<"\n" ;
     }
 }
+
 
 /* Checks whether all the cells in a particular cage are filled.
  * returns true if they are filled
