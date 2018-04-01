@@ -11,7 +11,7 @@ using namespace std;
 struct cage
 {
 	int sum, capacity;
-	int cells[];	
+	int cells[];
 };
 
 /* If a cell is not assigned any number, then value = 0.
@@ -23,8 +23,26 @@ struct cell {
 };
 
 
-void solve_sudoku();
-void print_board();
+void solve_sudoku(cage,cell,int);
+void print_board(cell);
+
+void solve_sudoku(cage Cage[],cell board[9][9],int no_of_cage)
+{
+    int cage_id ;
+
+    // If there is only one cell in the cage, then set its value to the sum :
+    for(cage_id=0;cage_id<no_of_cage;cage_id++)
+    {
+        if(Cage[cage_id].capacity==1)
+            {
+                int row = Cage[cage_id].cells[0]/10 ;
+                int col = Cage[cage_id].cells[0]%10 ;
+                board[row][col] = Cage[cage_id].sum ;
+            }
+    }
+
+
+}
 
 
 int main() {
@@ -64,5 +82,20 @@ int main() {
 
 	//print_board();
 
+
+
+    print_board(Board) ;
 	return 0;
+}
+
+
+
+void print_board(cell board[9][9])
+{
+    for(int row=0 ; row<9 ; row++)
+    {
+        for(int col=0 ; col<9 ; col++)
+            cout<<board[row][col].value <<" " ;
+        cout<<"\n" ;
+    }
 }
