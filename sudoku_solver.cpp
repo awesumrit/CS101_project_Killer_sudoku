@@ -28,7 +28,9 @@ struct cell {
 
 
 void solve_sudoku(cage,cell,int);
-void print_board(cell [9][9]);
+void print_board(cell[][9]);
+bool isCageFilled(cage);
+bool isCageSumSatisfied(cage);
 
 void solve_sudoku(cage Cage[],cell board[9][9],int no_of_cage)
 {
@@ -88,14 +90,9 @@ int main() {
 
 	//solve_sudoku();
 
-	//print_board();
-
-
-
-    print_board(Board) ;
+    print_board(Board);
 	return 0;
 }
-
 
 
 /* Searches the grid to find an entry that is still unassigned. If
@@ -154,13 +151,7 @@ bool isSafe(cell grid[N][N], int row, int col, int num)
 }
 
 
-
-
-
-
-
-
-void print_board(cell board[9][9])
+void print_board(cell board[][9])
 {
     for(int row=0 ; row<9 ; row++)
     {
@@ -171,5 +162,31 @@ void print_board(cell board[9][9])
 }
 
 
+/* Checks whether all the cells in a particular cage are filled.
+ * returns true if they are filled
+ * else returns false
+ */
+bool isCageFilled(cage Cage) {
+	for (int cell=0; cell<Cage.capacity; cell++) {
+		if (Cage.cells[cell] == 0)
+			return false;
+	}
+	return true;
+}
 
-
+/* checks whether the sum of all the cells in a cage 
+ * equals the cage sum and returns true if it is.
+ * Returns true if the cage is not yet filled.
+ * else returns false
+ */
+bool isCageSumSatisfied(cage Cage) {
+	if (!isCageFilled(Cage)) return true;
+	int sum = 0;
+	for (int cell=0; cell<Cage.capacity; cell++) {
+		sum += Cage.cells[cell];
+	}
+	if (sum == Cage.sum)
+		return true;
+	else
+		return false;
+}
