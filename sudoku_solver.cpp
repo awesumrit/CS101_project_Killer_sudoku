@@ -1,10 +1,6 @@
 #include <iostream>
 using namespace std;
 
-#define UNASSIGNED 0
-#define N 9
-
-
 /* each cage will be assigned a unique id.
  * the cells array for each cage will contain the id of the cells belonging to the cage.
  * capacity of the cage = no of cells
@@ -31,29 +27,6 @@ void solve_sudoku(cage,cell,int);
 void print_board(cell[][9]);
 bool isCageFilled(cage);
 bool isCageSumSatisfied(cage);
-
-void solve_sudoku(cage Cage[],cell board[9][9],int no_of_cage)
-{
-    int cage_id ;
-
-    // If there is only one cell in the cage, then set its value to the sum :
-    for(cage_id=0;cage_id<no_of_cage;cage_id++)
-    {
-        if(Cage[cage_id].capacity==1)
-            {
-                int row = Cage[cage_id].cells[0]/10 ;
-                int col = Cage[cage_id].cells[0]%10 ;
-                board[row][col].value = Cage[cage_id].sum ;
-            }
-    }
-
-    for(int i=0;i<9;i++)
-    {
-
-    }
-
-}
-
 
 int main() {
 
@@ -94,60 +67,86 @@ int main() {
 	return 0;
 }
 
-
-/* Searches the grid to find an entry that is still unassigned. If
-   found, the reference parameters row, col will be set the location
-   that is unassigned, and true is returned. If no unassigned entries
-   remain, false is returned. */
-bool FindUnassignedLocation(cell grid[N][N], int &row, int &col)
+void solve_sudoku(cage Cage[],cell board[9][9],int no_of_cage)
 {
-    for (row = 0; row < N; row++)
-        for (col = 0; col < N; col++)
-            if (grid[row][col].value == UNASSIGNED)
+    int cage_id ;
+
+    // If there is only one cell in the cage, then set its value to the sum :
+    for(cage_id=0;cage_id<no_of_cage;cage_id++)
+    {
+        if(Cage[cage_id].capacity==1)
+            {
+                int row = Cage[cage_id].cells[0]/10 ;
+                int col = Cage[cage_id].cells[0]%10 ;
+                board[row][col].value = Cage[cage_id].sum ;
+            }
+    }
+
+    for(int i=0;i<9;i++)
+    {
+
+    }
+
+}
+
+
+/* Searches the grid to find a cell that is still unassigned. 
+ * Sets the reference parameters row and col to the row and column of this cell
+ * returns false if no such cell is found.
+ */
+bool FindUnassignedLocation(cell board[9][9], int &row, int &col)
+{
+    for (row = 0; row < 9; row++)
+        for (col = 0; col < 9; col++)
+            if (board[row][col].value == 0)
                 return true;
     return false;
 }
 
-/* Returns a boolean which indicates whether any assigned entry
-   in the specified row matches the given number. */
-bool UsedInRow(cell grid[N][N], int row, int num)
+/* Returns true if there is no conflict in the row while assigning a number
+ * returns false if the number is already used.
+ */
+bool UsedInRow(cell board[9][9], int row, int num)
 {
-    for (int col = 0; col < N; col++)
-        if (grid[row][col].value == num)
+    for (int col = 0; col < 9; col++)
+        if (board[row][col].value == num)
+            return true;
+    return false;
+}
+
+/* Returns true if there is no conflict in the column while assigning a number
+ * returns false if the number is already used.
+ */
+bool UsedInCol(cell board[9][9], int col, int num)
+{
+    for (int row = 0; row < 9; row++)
+        if (board[row][col].value == num)
             return true;
     return false;
 }
 
 /* Returns a boolean which indicates whether any assigned entry
-   in the specified column matches the given number. */
-bool UsedInCol(cell grid[N][N], int col, int num)
-{
-    for (int row = 0; row < N; row++)
-        if (grid[row][col].value == num)
-            return true;
-    return false;
-}
-
-/* Returns a boolean which indicates whether any assigned entry
-   within the specified 3x3 box matches the given number. */
-bool UsedInBox(cell grid[N][N], int boxStartRow, int boxStartCol, int num)
+ * within the specified 3x3 box matches the given number. 
+ */
+bool UsedInBox(cell board[9][9], int boxStartRow, int boxStartCol, int num)
 {
     for (int row = 0; row < 3; row++)
         for (int col = 0; col < 3; col++)
-            if (grid[row+boxStartRow][col+boxStartCol].value == num)
+            if (board[row+boxStartRow][col+boxStartCol].value == num)
                 return true;
     return false;
 }
 
 /* Returns a boolean which indicates whether it will be legal to assign
-   num to the given row,col location. */
-bool isSafe(cell grid[N][N], int row, int col, int num)
+ * num to the given row,col location. 
+ */
+bool isSafe(cell board[9][9], int row, int col, int num)
 {
     /* Check if 'num' is not already placed in current row,
        current column and current 3x3 box */
-    return !UsedInRow(grid, row, num) &&
-           !UsedInCol(grid, col, num) &&
-           !UsedInBox(grid, row - row%3 , col - col%3, num);
+    return !UsedInRow(board, row, num) &&
+           !UsedInCol(board, col, num) &&
+           !UsedInBox(board, row - row%3 , col - col%3, num);
 }
 
 
@@ -159,19 +158,6 @@ void print_board(cell board[][9])
             cout<<board[row][col].value <<" " ;
         cout<<"\n" ;
     }
-}
-
-
-/* Checks whether all the cells in a particular cage are filled.
- * returns true if they are filled
- * else returns false
- */
-bool isCageFilled(cage Cage) {
-	for (int cell=0; cell<Cage.capacity; cell++) {
-		if (Cage.cells[cell] == 0)
-			return false;
-	}
-	return true;
 }
 
 /* checks whether the sum of all the cells in a cage 
@@ -190,3 +176,16 @@ bool isCageSumSatisfied(cage Cage) {
 	else
 		return false;
 }
+
+/* Checks whether all the cells in a particular cage are filled.
+ * returns true if they are filled
+ * else returns false
+ */
+bool isCageFilled(cage Cage) {
+	for (int cell=0; cell<Cage.capacity; cell++) {
+		if (Cage.cells[cell] == 0)
+			return false;
+	}
+	return true;
+}
+
