@@ -24,7 +24,7 @@ struct cell {
 
 
 void solve_sudoku(cage,cell,int);
-void print_board(cell[][9]);
+void print_board(cell[9][9]);
 bool isCageFilled(cage);
 bool isCageSumSatisfied(cage);
 
@@ -90,7 +90,7 @@ void solve_sudoku(cage Cage[],cell board[9][9],int no_of_cage)
 }
 
 
-/* Searches the grid to find a cell that is still unassigned. 
+/* Searches the grid to find a cell that is still unassigned.
  * Sets the reference parameters row and col to the row and column of this cell
  * returns false if no such cell is found.
  */
@@ -126,7 +126,7 @@ bool UsedInCol(cell board[9][9], int col, int num)
 }
 
 /* Returns a boolean which indicates whether any assigned entry
- * within the specified 3x3 box matches the given number. 
+ * within the specified 3x3 box matches the given number.
  */
 bool UsedInBox(cell board[9][9], int boxStartRow, int boxStartCol, int num)
 {
@@ -136,17 +136,36 @@ bool UsedInBox(cell board[9][9], int boxStartRow, int boxStartCol, int num)
                 return true;
     return false;
 }
+/*Returns a true if there is no conflict in assigning a number to a cage
+   Else return false if number already exist in the cage.
+*/
+bool UsedInCage(cell board[9][9], cage Cage[], int row, int col, int num)
+{
+    //for(int
+    int cage_id = board[row][col].cage_id ;
+    int no_of_cells = Cage[cage_id].capacity  ;
+    for(int cell=0; cell < no_of_cells; cell++)
+    {
+         int row = Cage[cage_id].cells[cell]/10 ;
+         int col = Cage[cage_id].cells[cell]%10 ;
+            if(board[row][col].value == num )
+                return true ;
+    }
+    return false ;
+}
+
 
 /* Returns a boolean which indicates whether it will be legal to assign
- * num to the given row,col location. 
+ * num to the given row,col location.
  */
-bool isSafe(cell board[9][9], int row, int col, int num)
+bool isSafe(cell board[9][9], cage Cage[], int row, int col, int num)
 {
     /* Check if 'num' is not already placed in current row,
        current column and current 3x3 box */
     return !UsedInRow(board, row, num) &&
            !UsedInCol(board, col, num) &&
-           !UsedInBox(board, row - row%3 , col - col%3, num);
+           !UsedInBox(board, row - row%3 , col - col%3, num) &&
+           !UsedInCage(board, Cage, row, col, num) ;
 }
 
 
@@ -160,7 +179,7 @@ void print_board(cell board[][9])
     }
 }
 
-/* checks whether the sum of all the cells in a cage 
+/* checks whether the sum of all the cells in a cage
  * equals the cage sum and returns true if it is.
  * Returns true if the cage is not yet filled.
  * else returns false
